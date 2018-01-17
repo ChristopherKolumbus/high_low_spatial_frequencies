@@ -1,6 +1,8 @@
 import csv
 
 import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
 
 
 def read_data(data_path):
@@ -24,7 +26,7 @@ def read_data(data_path):
                 continue
             trial.append(line[0])
             data['place'].append(int(line[1]))
-            data['step1_picture'].append(line[2])
+            data['step1_picture'].append(int(line[2]))
             data['step1_angle'].append(line[3])
             data['step3_angle'].append(line[4])
             data['scale_shift'].append(int(line[5]))
@@ -49,11 +51,19 @@ def remove_scale_factor(df):
     return df
 
 
+def calculate_mean(df, mode):
+    temp = []
+    for step1_picture, number_response in zip(df['step1_picture'], df['number_response']):
+        if mode == step1_picture:
+            temp.append(number_response)
+    print(np.mean(temp))
+
+
 def main():
-    data_path = r'.\data\ProjectResults_20180117150251.txt'
+    data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    print(df.head())
+    calculate_mean(df, 2)
 
 
 if __name__ == '__main__':
