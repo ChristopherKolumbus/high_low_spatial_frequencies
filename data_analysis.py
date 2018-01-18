@@ -63,11 +63,34 @@ def sort_data(df, which_place, which_step1_picture):
                     sorted_data.append(number_response)
             return sorted_data
 
+
+def calc_stats(df):
+    places = {
+        '0': 'Forest',
+        '1': 'Hagelloch',
+        '2': 'Bebenhausen'
+    }
+    step_1_pictures = {
+        '0': 'Composite',
+        '1': 'High',
+        '2': 'Low'
+    }
+    for which_place in range(3):
+        for which_step1_picture in range(3):
+            place = places[str(which_place)]
+            step_1_picture = step_1_pictures[str(which_step1_picture)]
+            sorted_data = sort_data(df, which_place, which_step1_picture)
+            mean_data = np.round(np.mean(sorted_data), 1)
+            std_data = np.round(np.std(sorted_data), 1)
+            median_data = np.round(np.median(sorted_data), 1)
+            print(f'Stats for {place} & {step_1_picture}: Median ({median_data}), Mean ({mean_data}), STD ({std_data})')
+
+
 def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    print(np.mean(sort_data(df, 0, 1)))
+    calc_stats(df)
 
 
 if __name__ == '__main__':
