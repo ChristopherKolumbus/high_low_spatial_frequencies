@@ -2,6 +2,7 @@ import csv
 
 import pandas as pd
 import numpy as np
+from scipy import stats
 from matplotlib import pyplot as plt
 
 
@@ -43,7 +44,7 @@ def read_data(data_path):
             data['place'].append(place_names[line[1]])
             data['step1_picture'].append(step_1_picture_names[line[2]])
             data['step1_angle'].append(line[3])
-            data['step3_angle'].append(line[4])
+            data['step3_angle'].append(int(line[4]))
             data['scale_shift'].append(int(line[5]))
             data['block'].append(int(line[6]))
             data['number_response'].append(int(line[7]))
@@ -69,20 +70,23 @@ def remove_scale_factor(df):
     return df
 
 
-def polar_plot(df):
-    number_response = np.array(df['number_response'])
-    radius = np.ones(number_response.shape)
-    ax = plt.subplot(111, projection='polar')
-    ax.scatter(np.deg2rad(number_response), radius)
-    ax.set_rmax(1.1)
-    plt.show()
+def calc_stats(df, which_place, which_picture):
+    df_slice = np.array(df['number_response'][(df['place'] == which_place) & (df['step1_picture'] == which_picture)])
+    df_slice = np.deg2rad(df_slice)
+    mean_result = np.round(np.rad2deg(stats.circmean(df_slice, low= -np.pi, high= np.pi)), 1)
+    median_result = np.round(np.rad2deg(stats.circvar(df_slice, low= -np.pi, high= np.pi)), 1)
+    std_result = np.round(np.rad2deg(stats.circstd(df_slice, low= -np.pi, high= np.pi)), 1)
+    print(
+        f'{which_place} ({which_picture}): {mean_result} (Mean); {median_result} (Var); {std_result} (STD)'
+    )
 
 
 def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    print(df['number_response'][(df['place'] == 'Bebenhausen') & (df['step1_picture'] == 'Composite')].median())
+    print(len(df[(df['place'] == 'Bebenhausen') & (df['step1_picture'] == 'Low') & (df['step3_angle'] == 210)]))
+    # calc_stats(df, 'Bebenhausen', 'High')
 
 
 if __name__ == '__main__':
