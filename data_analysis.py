@@ -51,7 +51,10 @@ def remove_scale_factor(df):
     number_response_without_scale_shift = []
     for place, scale_shift, number_response in zip(df['place'], df['scale_shift'], df['number_response']):
         scale_shift_factor = scale_shift_factors[f'place{place}'][scale_shift - 1]
-        number_response_without_scale_shift.append(number_response - scale_shift_factor)
+        result = number_response - scale_shift_factor
+        if result < 0:
+            result += 360
+        number_response_without_scale_shift.append(result)
     df['number_response'] = number_response_without_scale_shift
     return df
 
@@ -86,11 +89,21 @@ def calc_stats(df):
             print(f'Stats for {place} & {step_1_picture}: Median ({median_data}), Mean ({mean_data}), STD ({std_data})')
 
 
+def polar_plot(df):
+    number_response = np.array(df['number_response'])
+    radius = np.ones(number_response.shape)
+    ax = plt.subplot(111, projection='polar')
+    ax.scatter(np.deg2rad(number_response), radius)
+    ax.set_rmax(1.1)
+    plt.show()
+
+
 def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    calc_stats(df)
+    print(df[df['place'] == 0])
+    # polar_plot(df)
 
 
 if __name__ == '__main__':
