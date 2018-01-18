@@ -20,8 +20,13 @@ def read_data(data_path):
             'letter_response': []
         }
         for index, line in enumerate(data_reader):
+            # Skip header:
             if index == 0:
                 continue
+            # Skip training block:
+            elif int(line[6]) == 0:
+                continue
+            # Skip incomplete lines:
             elif len(line) != 10:
                 continue
             trial.append(line[0])
@@ -30,7 +35,7 @@ def read_data(data_path):
             data['step1_angle'].append(line[3])
             data['step3_angle'].append(line[4])
             data['scale_shift'].append(int(line[5]))
-            data['block'].append(line[6])
+            data['block'].append(int(line[6]))
             data['number_response'].append(int(line[7]))
             data['letter_response'].append(line[8])
         df = pd.DataFrame(data, index=trial, columns=data.keys())
@@ -51,19 +56,21 @@ def remove_scale_factor(df):
     return df
 
 
-def calculate_mean(df, mode):
-    temp = []
-    for step1_picture, number_response in zip(df['step1_picture'], df['number_response']):
-        if mode == step1_picture:
-            temp.append(number_response)
-    print(np.mean(temp))
+def sort_data(df):
+    for places in range(3):
+        for step1_pictures in range(3):
+            temp = []
+            for place, step1_picture, number_response in zip(df['place'], df['step1_picture'], df['number_response']):
+                if place == places and step1_picture == step1_pictures:
+                    temp.append(number_response)
 
 
 def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    calculate_mean(df, 2)
+    print(df.head())
+    print(len(df))
 
 
 if __name__ == '__main__':
