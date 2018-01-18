@@ -6,6 +6,16 @@ from matplotlib import pyplot as plt
 
 
 def read_data(data_path):
+    place_names = {
+        '0': 'Forest',
+        '1': 'Hagelloch',
+        '2': 'Bebenhausen'
+    }
+    step_1_picture_names = {
+        '0': 'Composite',
+        '1': 'High',
+        '2': 'Low'
+    }
     with open(data_path, 'r') as data_file:
         data_reader = csv.reader(data_file, delimiter=' ')
         trial = []
@@ -30,8 +40,8 @@ def read_data(data_path):
             elif len(line) != 10:
                 continue
             trial.append(line[0])
-            data['place'].append(int(line[1]))
-            data['step1_picture'].append(int(line[2]))
+            data['place'].append(place_names[line[1]])
+            data['step1_picture'].append(step_1_picture_names[line[2]])
             data['step1_angle'].append(line[3])
             data['step3_angle'].append(line[4])
             data['scale_shift'].append(int(line[5]))
@@ -44,13 +54,13 @@ def read_data(data_path):
 
 def remove_scale_factor(df):
     scale_shift_factors = {
-        'place0': [180, 277, 356, 90],
-        'place1': [224, 321, 40, 134],
-        'place2': [203, 300, 19, 113]
+        'Forest': [180, 277, 356, 90],
+        'Hagelloch': [224, 321, 40, 134],
+        'Bebenhausen': [203, 300, 19, 113]
     }
     number_response_without_scale_shift = []
     for place, scale_shift, number_response in zip(df['place'], df['scale_shift'], df['number_response']):
-        scale_shift_factor = scale_shift_factors[f'place{place}'][scale_shift - 1]
+        scale_shift_factor = scale_shift_factors[place][scale_shift - 1]
         result = number_response - scale_shift_factor
         if result < 0:
             result += 360
@@ -68,16 +78,6 @@ def sort_data(df, which_place, which_step1_picture):
 
 
 def calc_stats(df):
-    places = {
-        '0': 'Forest',
-        '1': 'Hagelloch',
-        '2': 'Bebenhausen'
-    }
-    step_1_pictures = {
-        '0': 'Composite',
-        '1': 'High',
-        '2': 'Low'
-    }
     for which_place in range(3):
         for which_step1_picture in range(3):
             place = places[str(which_place)]
@@ -102,8 +102,7 @@ def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    print(df[df['place'] == 0])
-    # polar_plot(df)
+    print(df['number_response'][(df['place'] == 'Bebenhausen') & (df['step1_picture'] == 'Composite')].median())
 
 
 if __name__ == '__main__':
