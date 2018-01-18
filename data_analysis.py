@@ -56,21 +56,18 @@ def remove_scale_factor(df):
     return df
 
 
-def sort_data(df):
-    for places in range(3):
-        for step1_pictures in range(3):
-            temp = []
+def sort_data(df, which_place, which_step1_picture):
+            sorted_data = []
             for place, step1_picture, number_response in zip(df['place'], df['step1_picture'], df['number_response']):
-                if place == places and step1_picture == step1_pictures:
-                    temp.append(number_response)
-
+                if place == which_place and step1_picture == which_step1_picture:
+                    sorted_data.append(number_response)
+            return sorted_data
 
 def main():
     data_path = r'.\data\ProjectResults_ID1_20180117160908.txt'
     df = read_data(data_path)
     df = remove_scale_factor(df)
-    print(df.head())
-    print(len(df))
+    print(np.mean(sort_data(df, 0, 1)))
 
 
 if __name__ == '__main__':
