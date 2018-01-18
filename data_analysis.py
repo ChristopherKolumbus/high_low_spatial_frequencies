@@ -69,26 +69,6 @@ def remove_scale_factor(df):
     return df
 
 
-def sort_data(df, which_place, which_step1_picture):
-            sorted_data = []
-            for place, step1_picture, number_response in zip(df['place'], df['step1_picture'], df['number_response']):
-                if place == which_place and step1_picture == which_step1_picture:
-                    sorted_data.append(number_response)
-            return sorted_data
-
-
-def calc_stats(df):
-    for which_place in range(3):
-        for which_step1_picture in range(3):
-            place = places[str(which_place)]
-            step_1_picture = step_1_pictures[str(which_step1_picture)]
-            sorted_data = sort_data(df, which_place, which_step1_picture)
-            mean_data = np.round(np.mean(sorted_data), 1)
-            std_data = np.round(np.std(sorted_data), 1)
-            median_data = np.round(np.median(sorted_data), 1)
-            print(f'Stats for {place} & {step_1_picture}: Median ({median_data}), Mean ({mean_data}), STD ({std_data})')
-
-
 def polar_plot(df):
     number_response = np.array(df['number_response'])
     radius = np.ones(number_response.shape)
